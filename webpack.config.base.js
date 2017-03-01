@@ -6,6 +6,9 @@ import path from 'path';
 import validate from 'webpack-validator';
 import { dependencies as externals } from './app/package.json';
 
+let externalList = Object.keys(externals || {});
+externalList.push("ws");
+
 export default validate({
   module: {
     loaders: [{
@@ -15,7 +18,9 @@ export default validate({
     }, {
       test: /\.json$/,
       loader: 'json-loader'
-    }]
+    }],
+	noParse: ['ws']
+
   },
 
   output: {
@@ -36,5 +41,5 @@ export default validate({
 
   plugins: [],
 
-  externals: Object.keys(externals || {})
+  externals: externalList
 });

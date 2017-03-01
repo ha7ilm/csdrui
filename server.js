@@ -50,3 +50,26 @@ process.on('SIGTERM', () => {
     process.exit(0);
   });
 });
+
+function ab2str(buf) { //https://developers.google.com/web/updates/2012/06/How-to-convert-ArrayBuffer-to-and-from-String
+  return String.fromCharCode.apply(null, new Uint16Array(buf));
+}
+
+//csdrui starts
+const io = require('socket.io')(server);
+var currentSocket = null;
+process.stdin.on("readable", ()=>{ 
+	let stdinRead = process.stdin.read();
+	console.log("stdin: "+stdinRead); 
+	//if(currentSocket) currentSocket.broadcast.emit("stdin", stdinRead);
+	//else console.log("currentSocket is not set");
+	if(stdinRead) io.sockets.emit("stdin", ab2str(stdinRead));
+});
+
+io.on("connection", (socket)=>
+{
+	console.log("server: socket.io connected"); 
+	io.sockets.emit("stdin", "test");
+	currentSocket = socket;
+});
+
